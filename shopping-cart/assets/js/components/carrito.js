@@ -1,24 +1,26 @@
-import productos from '../database/index.js'
+import productos from "../database/index.js";
 
 /* Creamos un nuevo arreglo vacio */
-let articulos = []
+let articulos = [];
 
 /* Buscar el elemento en el DOM */
-const articulosContenedor = document.getElementById('articulosContenedor')
+const articulosContenedor = document.getElementById("articulosContenedor");
 
-const precioTotal = document.getElementById('precioTotal')
+const precioTotal = document.getElementById("precioTotal");
 
-const amountTotal = document.getElementById(`amountTotal`)
+const amountTotal = document.getElementById(`amountTotal`);
 
 /* Pintamos los articulos en el Carrito */
-function pintarArticulos () {
+function pintarArticulos() {
   /* creamos una variable para almacenar después los articulos */
-  let html = ''
+  let html = "";
   /* Recorremos el array de articulos */
   for (const articulo of articulos) {
-    const productoFiltrado = productos.find(producto => producto.id === articulo.id)
+    const productoFiltrado = productos.find(
+      (producto) => producto.id === articulo.id
+    );
 
-    const { id, nombre, imagen, precio, cantidad } = productoFiltrado
+    const { id, nombre, imagen, precio, cantidad } = productoFiltrado;
 
     html += `
     <div>
@@ -33,95 +35,99 @@ function pintarArticulos () {
       </div>
     </div>
   </div>  
-    `
+    `;
   }
 
-  console.log(articulos)
-  articulosContenedor.innerHTML = html
+  console.log(articulos);
+  articulosContenedor.innerHTML = html;
 
   /* Pintar el total en el Carrito */
-  precioTotal.innerHTML = mostrarTotal()
-  amountTotal.innerHTML = cantidadTotal()
+  precioTotal.innerHTML = mostrarTotal();
+  amountTotal.innerHTML = cantidadTotal();
 }
 
-function agregarArticulo (id, cantidad) {
-  const productoFiltrado = productos.find(producto => producto.id === id)
+function agregarArticulo(id, cantidad) {
+  const productoFiltrado = productos.find((producto) => producto.id === id);
 
   /* cehcar que tengamos stock del producto */
   if (productoFiltrado && productoFiltrado.cantidad > 0) {
     /* Si el articulo no está, lo agregamos, pero si ya está, aumentamos la cantidad */
 
-    const articuloFiltrado = articulos.find(articulo => articulo.id === id)
+    const articuloFiltrado = articulos.find((articulo) => articulo.id === id);
 
     if (articuloFiltrado) {
       /* Si la cantidad no supera el stock, aumentamos la catidad, si no, mostramos un mensaje */
       if (checarInventario(id, cantidad + articuloFiltrado.cantidad)) {
-        articuloFiltrado.cantidad += cantidad
+        articuloFiltrado.cantidad += cantidad;
       } else {
-        window.alert('Sorry not enough in stock')
+        Swal.fire("Sorry not enough in stock");
       }
     } else {
-      articulos.push({ id, cantidad })
+      articulos.push({ id, cantidad });
     }
   } else {
-    window.alert('Sorry, out of stock')
+    Swal.fire("Sorry, out of stock");
   }
 }
 
-function removerArticulo (id, cantidad) {
-  const articuloFiltrado = articulos.find(articulo => articulo.id === id)
+function removerArticulo(id, cantidad) {
+  const articuloFiltrado = articulos.find((articulo) => articulo.id === id);
 
   if (articuloFiltrado.cantidad - cantidad > 0) {
-    articuloFiltrado.cantidad -= cantidad
+    articuloFiltrado.cantidad -= cantidad;
   } else {
-    const confirmar = window.confirm('Are you sure you want to remove the item?')
+    const confirmar = Swal.fire("Are you sure you want to remove the item?");
 
     if (confirmar) {
-      articulos = articulos.filter(articulo => articulo.id !== id)
+      articulos = articulos.filter((articulo) => articulo.id !== id);
     }
   }
 }
 
-function removerTodo (id) {
-  articulos = articulos.filter(articulo => articulo.id !== id)
+function removerTodo(id) {
+  articulos = articulos.filter((articulo) => articulo.id !== id);
 }
 
-function checarInventario (id, cantidad) {
-  const productoFiltrado = productos.find(producto => producto.id === id)
+function checarInventario(id, cantidad) {
+  const productoFiltrado = productos.find((producto) => producto.id === id);
 
-  return productoFiltrado.cantidad - cantidad >= 0
+  return productoFiltrado.cantidad - cantidad >= 0;
 }
 
-function mostrarTotal () {
-  let total = 0
+function mostrarTotal() {
+  let total = 0;
   for (const articulo of articulos) {
-    const productoFiltrado = productos.find(producto => producto.id === articulo.id)
-    total += articulo.cantidad * productoFiltrado.precio
+    const productoFiltrado = productos.find(
+      (producto) => producto.id === articulo.id
+    );
+    total += articulo.cantidad * productoFiltrado.precio;
   }
-  return `$${total}`
+  return `$${total}`;
 }
-function cantidadTotal () {
-  let total = []
+function cantidadTotal() {
+  let total = [];
   for (const articulo of articulos) {
-    total.push(articulo.cantidad) + 1
+    total.push(articulo.cantidad) + 1;
   }
-  const suma = (total.reduce((num1, num2) => num1 + num2, 0))
-  return suma
+  const suma = total.reduce((num1, num2) => num1 + num2, 0);
+  return suma;
 }
 
-function vaciarCarrito () {
-  articulos = []
+function vaciarCarrito() {
+  articulos = [];
 }
 
-function comprar () {
+function comprar() {
   for (const articulo of articulos) {
-    const productoFiltrado = productos.find(producto => producto.id === articulo.id)
+    const productoFiltrado = productos.find(
+      (producto) => producto.id === articulo.id
+    );
 
-    productoFiltrado.cantidad -= articulo.cantidad
+    productoFiltrado.cantidad -= articulo.cantidad;
   }
 
-  vaciarCarrito()
-  window.alert('Thanks for your purchase!')
+  vaciarCarrito();
+  Swal.fire("Thanks for your purchase!");
 }
 
 export {
@@ -131,5 +137,5 @@ export {
   removerTodo,
   vaciarCarrito,
   comprar,
-  articulos
-}
+  articulos,
+};
